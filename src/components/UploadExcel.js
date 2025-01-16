@@ -8,6 +8,7 @@ const UploadExcel = () => {
   const dispatch = useDispatch();
   const [clientId, setClientId] = useState('');
   const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(''); 
   const [headers, setHeaders] = useState([]);
   const [mapping, setMapping] = useState({
     name: '',
@@ -24,11 +25,13 @@ const UploadExcel = () => {
   });
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState('');
+  const [toggle, setToggle] = useState(false); 
 
   const handleClientIdChange = (e) => setClientId(e.target.value);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
+    setFileName(selectedFile.name); 
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -75,7 +78,8 @@ const UploadExcel = () => {
       const payload = {
         clientId,
         fileContent,
-        mapping: JSON.stringify(filteredMapping)
+        mapping: JSON.stringify(filteredMapping),
+        toggle 
       };
 
       console.log(payload);
@@ -96,12 +100,22 @@ const UploadExcel = () => {
           <div className="client-id-group">
             <label>Client ID:</label>
             <input type="text" value={clientId} onChange={handleClientIdChange} />
+            <div className="file-upload-group">
+              <label>Excel:</label>
+              <label className="custom-file-upload">
+                <input type="file" accept=".xlsx, .xls, .csv" onChange={handleFileChange} />
+                Escolher arquivo
+              </label>
+            </div>
+            {fileName && (
+              <div className="file-name-display">{fileName}</div> 
+            )}
           </div>
-          <div className="file-upload-group">
-            <label>Excel:</label>
-            <label className="custom-file-upload">
-              <input type="file" accept=".xlsx, .xls, .csv" onChange={handleFileChange} />
-              Escolher arquivo
+          <div className="toggle-group">
+            <label>Desativar:</label>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={toggle} onChange={() => setToggle(!toggle)} />
+              <span className="slider round"></span>
             </label>
           </div>
         </div>
