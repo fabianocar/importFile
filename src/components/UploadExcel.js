@@ -25,7 +25,7 @@ const UploadExcel = () => {
   });
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState('');
-  const [toggle, setToggle] = useState(false); 
+  const [inactived, setInactived] = useState(false); 
 
   const handleClientIdChange = (e) => setClientId(e.target.value);
   const handleFileChange = (e) => {
@@ -79,7 +79,7 @@ const UploadExcel = () => {
         clientId,
         fileContent,
         mapping: JSON.stringify(filteredMapping),
-        toggle 
+        inactived 
       };
 
       console.log(payload);
@@ -114,7 +114,7 @@ const UploadExcel = () => {
           <div className="toggle-group">
             <label title="Quando selecionado desativa as vidas">Desativar:</label>
             <label className="toggle-switch" title="Quando selecionado desativa as vidas">
-              <input type="checkbox" checked={toggle} onChange={() => setToggle(!toggle)} />
+              <input type="checkbox" checked={inactived} onChange={() => setInactived(!inactived)} />
               <span className="slider round"></span>
             </label>
           </div>
