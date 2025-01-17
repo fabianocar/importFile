@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { uploadExcel } from '../actions/uploadActions';
+import { uploadExcel, UPLOAD_EXCEL_SUCCESS, UPLOAD_EXCEL_FAIL } from '../actions/uploadActions';
 import './UploadExcel.css';
 import * as XLSX from 'xlsx';
+import Modal from 'react-modal';
 
 const UploadExcel = () => {
   const dispatch = useDispatch();
   const [clientId, setClientId] = useState('');
   const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState(''); 
+  const [fileName, setFileName] = useState('');
   const [headers, setHeaders] = useState([]);
   const [mapping, setMapping] = useState({
     name: '',
@@ -25,13 +26,16 @@ const UploadExcel = () => {
   });
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState('');
-  const [inactived, setInactived] = useState(false); 
+  const [inactived, setInactived] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [logMessages, setLogMessages] = useState('');
 
   const handleClientIdChange = (e) => setClientId(e.target.value);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
-    setFileName(selectedFile.name); 
+    setFileName(selectedFile.name);
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -69,6 +73,10 @@ const UploadExcel = () => {
       return;
     }
 
+    setIsLoading(true);
+    setModalMessage('');
+    setLogMessages('');
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const fileContent = event.target.result.split(',')[1]; // Remove the header from base64 string
@@ -79,12 +87,29 @@ const UploadExcel = () => {
         clientId,
         fileContent,
         mapping: JSON.stringify(filteredMapping),
-        inactived 
+        inactived
       };
 
       console.log(payload);
 
-      dispatch(uploadExcel(payload));
+      dispatch(uploadExcel(payload))
+        .then((action) => {
+          const { type, payload } = action;
+          if (type === UPLOAD_EXCEL_SUCCESS) {
+            setModalMessage(payload.message || 'Processamento concluído com sucesso');
+            setLogMessages(payload.log || '');
+          } else if (type === UPLOAD_EXCEL_FAIL) {
+            setModalMessage(payload.message || 'Erro ao processar o arquivo.');
+            setLogMessages(payload.log || '');
+          }
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          const errorData = err.response?.data || {};
+          setIsLoading(false);
+          setModalMessage(errorData.message || 'Erro ao processar o arquivo.');
+          setLogMessages(errorData.log || '');
+        });
     };
     reader.readAsDataURL(file);
   };
@@ -108,7 +133,7 @@ const UploadExcel = () => {
               </label>
             </div>
             {fileName && (
-              <div className="file-name-display" title="Nome do arquivo selecionado">{fileName}</div> 
+              <div className="file-name-display" title="Nome do arquivo selecionado">{fileName}</div>
             )}
           </div>
           <div className="toggle-group">
@@ -163,6 +188,34 @@ const UploadExcel = () => {
         )}
         <button type="submit" className="submit-btn" title="Enviar formulário">Enviar</button>
       </form>
+      <Modal
+        isOpen={isLoading || modalMessage}
+        contentLabel="Processando"
+        className="modal"
+        overlayClassName="overlay"
+      >
+        {isLoading && (
+          <div className="loading">
+            <p>Processando</p>
+            <div className="dots">
+              <span>.</span>
+              <span>.</span>
+              <span>.</span>
+            </div>
+          </div>
+        )}
+        {modalMessage && (
+          <div className="message">
+            <p>{modalMessage}</p>
+            <button onClick={() => setModalMessage('')}>Fechar</button>
+          </div>
+        )}
+        {logMessages && (
+          <div className="log-messages">
+            <pre>{logMessages}</pre>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

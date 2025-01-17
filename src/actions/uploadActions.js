@@ -12,9 +12,9 @@ export const uploadExcel = (payload) => async (dispatch) => {
         'Content-Type': 'application/json',
       },
     });
-    dispatch({ type: UPLOAD_EXCEL_SUCCESS, payload: data });
+    return dispatch({ type: UPLOAD_EXCEL_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({
+    return dispatch({
       type: UPLOAD_EXCEL_FAIL,
       payload:
         error.response && error.response.data
