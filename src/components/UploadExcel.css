@@ -305,6 +305,27 @@ select:focus {
   outline: none;
 }
 
+.print-btn {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.3s ease;
+  align-self: center;
+}
+
+.print-btn:hover {
+  background: #0056b3;
+}
+
+.print-btn:focus {
+  outline: none;
+}
+
 .toggle-group {
   width: 48%; 
   display: flex;
@@ -509,4 +530,15 @@ input:checked + .slider:before {
 
 .message button:hover {
   color: #0056b3;
+}
+
+.modal .message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal .message button {
+  margin-top: 10px;
+  align-self: flex-end;
 }

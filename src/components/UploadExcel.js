@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { uploadExcel, UPLOAD_EXCEL_SUCCESS, UPLOAD_EXCEL_FAIL } from '../actions/uploadActions';
 import './UploadExcel.css';
@@ -18,6 +18,7 @@ const UploadExcel = () => {
     address: '',
     city: '',
     uf: '',
+    cep: '',
     phone: '',
     holder: '',
     email: '',
@@ -30,6 +31,11 @@ const UploadExcel = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [logMessages, setLogMessages] = useState('');
+
+  useEffect(() => {
+    // Simulate log messages for testing
+    setLogMessages('Simulated log message for testing purposes.');
+  }, []);
 
   const handleClientIdChange = (e) => setClientId(e.target.value);
   const handleFileChange = (e) => {
@@ -112,6 +118,15 @@ const UploadExcel = () => {
         });
     };
     reader.readAsDataURL(file);
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Log Messages</title></head><body>');
+    printWindow.document.write('<pre>' + logMessages + '</pre>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
   };
 
   return (
@@ -211,9 +226,12 @@ const UploadExcel = () => {
           </div>
         )}
         {logMessages && (
-          <div className="log-messages">
-            <pre>{logMessages}</pre>
-          </div>
+          <>
+            <div className="log-messages">
+              <pre>{logMessages}</pre>
+            </div>
+            <button onClick={handlePrint} className="print-btn">Imprimir Logs</button>
+          </>
         )}
       </Modal>
     </div>
