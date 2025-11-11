@@ -23,7 +23,8 @@ const UploadExcel = () => {
     holder: '',
     email: '',
     serviceType: '',
-    paymentType: ''
+    paymentType: '',
+    plans: ''
   });
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState('');
